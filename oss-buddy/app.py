@@ -5,9 +5,10 @@ from groq import Groq
 from dotenv import load_dotenv
 
 load_dotenv()
+GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
+GITHUB_TOKEN = st.secrets["GITHUB_TOKEN"]
 
-groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
-GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+groq_client = Groq(api_key=GROQ_API_KEY)
 
 def fetch_issue(url):
     parts = url.strip("/").split("/")
