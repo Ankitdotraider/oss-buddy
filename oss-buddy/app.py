@@ -11,6 +11,11 @@ GITHUB_TOKEN = st.secrets["GITHUB_TOKEN"]
 groq_client = Groq(api_key=GROQ_API_KEY)
 
 def fetch_issue(url):
+    # Validate URL format first
+    import re
+    if not re.match(r"https://github\.com/[\w.-]+/[\w.-]+/issues/\d+", url):
+        raise ValueError("Invalid URL. Use format: github.com/owner/repo/issues/123")
+    
     parts = url.strip("/").split("/")
     owner = parts[3]
     repo = parts[4]
@@ -18,9 +23,15 @@ def fetch_issue(url):
     
     api_url = f"https://api.github.com/repos/{owner}/{repo}/issues/{issue_number}"
     headers = {"Authorization": f"token {GITHUB_TOKEN}"}
-    
     response = requests.get(api_url, headers=headers)
-    return response.json()
+    
+    data = response.json()
+    
+    # Check it's actually an issue
+    if "title" not in data:
+        raise ValueError("That URL doesn't point to a GitHub issue.")
+    
+    return data
 
 def explain_issue(issue_data):
     title = issue_data["title"]
